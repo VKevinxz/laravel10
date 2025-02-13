@@ -55,10 +55,11 @@ class AuthController extends Controller
                 'error' => ['Unauthorized']
             ], 401);
         }   
-        $user = User::where('email', $request->email)->firstOrFail();
+        $user = User::where('email', $request->email)->first();
         return response()->json([
             'status' => true,
             'message' => 'User logged in successfully',
+            'data' => $user,
             'token' => $user->createToken('API Token')->plainTextToken
         ], 200);
         
