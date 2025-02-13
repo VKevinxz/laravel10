@@ -12,11 +12,11 @@ class EmployeeController extends Controller
     
     public function index()
     {
-        $employees = Employee::select('employess.*', 
+        $employees = Employee::select('employees.*', 
         'departments.name as department')
         ->join('departments', 'departments.id', '=', 'employees.department_id')
         ->paginate(10);
-        return response()->json($employess);
+        return response()->json($employees);
     }
 
    
@@ -59,14 +59,23 @@ class EmployeeController extends Controller
             'department_id' => 'required|numeric',
         ];
         $validator = \Validator::make($request->input(), $rules);
-        if($validator->fails()){
+            
+        if ($validator->fails()) {
             return response()->json([
-                'status' => true,
-                'message' => 'Employee updated successfully'
-            ], 200);
+                'status' => false,
+                'errors' => $validator->errors(),
+            ], 400); // Código HTTP para errores
         }
+    
+        // Actualiza el empleado
         $employee->update($request->input());
-
+    
+        // Retorna un mensaje exitoso
+        return response()->json([
+            'status' => true,
+            'message' => 'Employee updated successfully'
+        ], 200);
+        
     }
 
     
@@ -79,17 +88,17 @@ class EmployeeController extends Controller
         ], 200);
     }
     public function EmployeesByDepartment(){
-        $employees = Employee::select(DB::raw('count(employees.id) as count', 'departments.name'))
-        ->join('departments', 'departments,id', '=', 'employees.department_id')
+        $employees = Employee::select(DB::raw('count(employees.id) as count, departments.name'))
+        ->rightjoin('departments', 'departments.id', '=', 'employees.department_id')
         ->groupBy('departments.name')->get();
         return response()->json($employees);
     }
 
     public function all(){
-        $employees = Employee::select('employess.*', 
+        $employees = Employee::select('employees.*', 
         'departments.name as department')
         ->join('departments', 'departments.id', '=', 'employees.department_id')
         ->get();
-        return response()->json($employess);
+        return response()->json($employees);
     }
 }

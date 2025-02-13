@@ -16,13 +16,21 @@ use App\Http\Controllers\AuthController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
+/* 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+}); */
+
+Route::post('auth/register', [AuthController::class, 'register']);
+Route::post('auth/login', [AuthController::class, 'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::resource('departments', DepartmentController::class);
+    Route::resource('employees', EmployeeController::class);
+    Route::get('employeesall', [EmployeeController::class, 'all']);
+    Route::get('employeesbydepartment', [EmployeeController::class, 'EmployeesByDepartment']);
+    Route::get('auth/logout', [AuthController::class, 'logout']);
 });
 
-Route::resource('departments', DepartmentController::class);
-Route::resource('employee', EmployeeController::class);
-Route::get('employeesall', [EmployeeController::class, 'all']);
-Route::get('employeesbydepartment', [EmployeeController::class, 'EmployeesByDepartment']);
+
     
